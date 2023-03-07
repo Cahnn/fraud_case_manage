@@ -25,8 +25,6 @@
           <ve-map :data="chartData" :settings="chartSettings" height="510px" style="width: 85%; padding-top: 50px;margin: 0 auto" :legend-visible="false" />
         </dv-border-box-11>
         <dv-border-box-9 style="width: 100%;height: 270px">
-          <!--          <p style="padding: 20px 0 0 30px;font-weight: bolder">最新诈骗案例</p>-->
-          <!--          <dv-scroll-board :config="config2" style="width:90%;height:200px;margin: 0 auto;padding-top: 15px" />-->
           <ve-histogram :data="chartData3" :extend="chartExtend3" height="300px" style="width: 90%;margin: 0 auto;padding-top: 20px" :legend-visible="true" />
         </dv-border-box-9>
       </div>

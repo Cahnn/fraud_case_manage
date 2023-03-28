@@ -15,7 +15,7 @@
   },
   "dependencies": {
     "@jiaminghi/data-view": "^2.10.0",
-    "axios": "0.18.1",
+    "axios": "^0.18.1",
     "core-js": "3.6.5",
     "echarts": "^4.9.0",
     "element-ui": "2.13.2",
@@ -26,7 +26,8 @@
     "v-charts": "^1.19.0",
     "vue": "2.6.10",
     "vue-router": "3.0.6",
-    "vuex": "3.1.0"
+    "vuex": "3.1.0",
+    "wangeditor": "^4.7.15"
   },
   "devDependencies": {
     "@vue/cli-plugin-babel": "4.4.4",

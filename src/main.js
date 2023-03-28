@@ -30,6 +30,8 @@ import 'echarts/lib/component/toolbox'
 import 'echarts/lib/component/title'
 import 'zrender/lib/svg/svg'
 import 'v-charts/lib/style.css'
+import axios from 'axios'
+import http from './http'
 
 [VeLine, VeMap, VePie, VeHistogram].forEach(comp => {
   Vue.component(comp.name, comp)
@@ -59,6 +61,7 @@ Vue.use(ElementUI, { locale })
 // Vue.use(ElementUI)
 
 Vue.config.productionTip = false
+Vue.prototype.$http = http
 
 new Vue({
   el: '#app',

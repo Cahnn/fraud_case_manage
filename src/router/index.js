@@ -54,17 +54,17 @@ export const constantRoutes = [
       meta: { title: '首页', icon: 'dashboard' }
     }]
   },
-  {
-    path: '/eCharts',
-    component: Layout,
-    redirect: '/eCharts',
-    children: [{
-      path: 'eCharts',
-      name: 'ECharts',
-      component: () => import('@/views/eCharts/index'),
-      meta: { title: 'eCharts', icon: 'el-icon-s-help' }
-    }]
-  },
+  // {
+  //   path: '/eCharts',
+  //   component: Layout,
+  //   redirect: '/eCharts',
+  //   children: [{
+  //     path: 'eCharts',
+  //     name: 'ECharts',
+  //     component: () => import('@/views/eCharts/index'),
+  //     meta: { title: 'eCharts', icon: 'el-icon-s-help' }
+  //   }]
+  // },
   {
     path: '/example',
     component: Layout,
@@ -86,7 +86,42 @@ export const constantRoutes = [
       }
     ]
   },
-
+  {
+    path: '/nested',
+    component: Layout,
+    redirect: '/nested/menu1',
+    name: 'Nested',
+    meta: {
+      title: '活动管理',
+      icon: 'nested'
+    },
+    children: [
+      {
+        path: 'menu1',
+        component: () => import('@/views/nested/menu1/index'), // Parent router-view
+        name: 'Menu1',
+        meta: { title: '活动列表' }
+      },
+      {
+        path: 'menu2',
+        component: () => import('@/views/nested/menu2/index'),
+        name: 'Menu2',
+        meta: { title: '添加活动' }
+      }
+    ]
+  },
+  {
+    path: '/qBank',
+    component: Layout,
+    children: [
+      {
+        path: 'index',
+        name: 'questionBank',
+        component: () => import('@/views/qBank/index'),
+        meta: { title: '题库管理', icon: 'form' }
+      }
+    ]
+  },
   {
     path: '/form',
     component: Layout,
@@ -99,28 +134,27 @@ export const constantRoutes = [
       }
     ]
   },
-
   {
-    path: '/nested',
+    path: '/issue',
     component: Layout,
-    redirect: '/nested/menu1',
-    name: 'Nested',
-    meta: {
-      title: '轮播图管理',
-      icon: 'nested'
-    },
     children: [
       {
-        path: 'menu1',
-        component: () => import('@/views/nested/menu1/index'), // Parent router-view
-        name: 'Menu1',
-        meta: { title: '轮播图' }
-      },
+        path: 'index',
+        name: 'Issue',
+        component: () => import('@/views/issue/index'),
+        meta: { title: '问答管理', icon: 'tree' }
+      }
+    ]
+  },
+  {
+    path: '/feedback',
+    component: Layout,
+    children: [
       {
-        path: 'menu2',
-        component: () => import('@/views/nested/menu2/index'),
-        name: 'Menu2',
-        meta: { title: '轮播图编辑' }
+        path: 'index',
+        name: 'Feedback',
+        component: () => import('@/views/feedback/index'),
+        meta: { title: '反馈管理', icon: 'table' }
       }
     ]
   },
@@ -132,7 +166,7 @@ export const constantRoutes = [
         path: 'user',
         name: 'User',
         component: () => import('@/views/user/index'),
-        meta: { title: '用户管理', icon: 'link' }
+        meta: { title: '用户管理', icon: 'user' }
       }
     ]
   },

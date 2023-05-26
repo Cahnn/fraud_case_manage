@@ -141,73 +141,164 @@ export default {
     }
     return {
       chartData: {
-        columns: ['位置', '诈骗数'],
+        columns: ['_id', 'count'],
         rows: [
-          { '位置': '吉林', '诈骗数': 123 },
-          { '位置': '北京', '诈骗数': 1223 },
-          { '位置': '上海', '诈骗数': 2123 },
-          { '位置': '浙江', '诈骗数': 4123 }
+          // { province: '', count: 0 }
+          // { '位置': '北京', '诈骗数': 1223 },
+          // { '位置': '上海', '诈骗数': 2123 },
+          // { '位置': '浙江', '诈骗数': 4123 }
         ]
       },
       chartData1: {
-        columns: ['日期', '年诈骗数'],
+        columns: ['_id', 'count'],
         rows: [
-          { 日期: '2012', 年诈骗数: 1393 },
-          { 日期: '2014', 年诈骗数: 3530 },
-          { 日期: '2016', 年诈骗数: 2923 },
-          { 日期: '2018', 年诈骗数: 1723 },
-          { 日期: '2020', 年诈骗数: 3792 },
-          { 日期: '2022', 年诈骗数: 4593 }
+          // { '_id': '2013', 'count': 1393 },
+          // { '_id': '2014', 'count': 3530 },
+          // { '_id': '2015', 'count': 1393 },
+          // { '_id': '2016', 'count': 3530 },
+          // { '_id': '2017', 'count': 2923 },
+          // { '_id': '2018', 'count': 1723 },
+          // { '_id': '2019', 'count': 3792 },
+          // { '_id': '2020', 'count': 4593 },
+          // { '_id': '2021', 'count': 3792 },
+          // { '_id': '2022', 'count': 4593 }
         ]
       },
       chartSettings2: {
         type: 'pie'
       },
+      chartData2_substitute: [
+        { _id: '', count: 0 },
+        { _id: '', count: 0 },
+        { _id: '', count: 0 },
+        { _id: '', count: 0 },
+        { _id: '', count: 0 },
+        { _id: '', count: 0 }
+      ],
       chartData2: {
-        columns: ['key', 'value'],
+        columns: ['_id', 'count'],
         rows: [
-          { key: '冒充‘公检法’办案诈骗', value: 1393 },
-          { key: '网络游戏虚假交易诈骗', value: 3530 },
-          { key: '假客代购诈骗', value: 2923 },
-          { key: '冒充熟人诈骗', value: 1723 },
-          { key: '校园贷诈骗', value: 3792 },
-          { key: '其它', value: 4593 }
-        ]
-      },
-      config1: {
-        data: [
-          {
-            name: '广东',
-            value: 26734
-          },
-          {
-            name: '河南',
-            value: 14783
-          },
-          {
-            name: '山东',
-            value: 12893
-          },
-          {
-            name: '四川',
-            value: 9348
-          },
-          {
-            name: '福建',
-            value: 8994
-          }
+          // { key: '冒充‘公检法’办案诈骗', value: 1393 },
+          // { key: '网络游戏虚假交易诈骗', value: 3530 },
+          // { key: '假客代购诈骗', value: 2923 },
+          // { key: '冒充熟人诈骗', value: 1723 },
+          // { key: '校园贷诈骗', value: 3792 },
+          // { key: '其它', value: 4593 }
         ]
       },
       chartData3: {
         columns: ['data', 'number'],
         rows: [
-          { data: '<18', number: 1393 },
-          { data: '18-35', number: 3530 },
-          { data: '36-45', number: 2923 },
-          { data: '46-60', number: 1723 },
-          { data: '>60', number: 1723 }
+          // { data: '<18', number: 1393 },
+          // { data: '18-35', number: 3530 },
+          // { data: '36-45', number: 2923 },
+          // { data: '46-60', number: 1723 },
+          // { data: '>60', number: 1723 }
+          { data: '', number: 0 },
+          { data: '', number: 0 },
+          { data: '', number: 0 },
+          { data: '', number: 0 },
+          { data: '', number: 0 }
         ]
       }
+    }
+  },
+  created() {
+    this.getProvinceCount()
+    this.getTypeCount()
+    this.getAgeCount()
+    this.getYearCount()
+  },
+  methods: {
+    getProvinceCount() {
+      this.$http({
+        path: '/admin/statistic/provinceCount',
+        method: 'get'
+      }).then(res => {
+        this.chartData.rows = res.data
+      })
+    },
+    getTypeCount() {
+      const that = this
+      that.$http({
+        path: '/admin/statistic/typeCount',
+        method: 'get'
+      }).then(res => {
+        that.chartData2_substitute = res.data
+        for (let i = 0; i < this.chartData2_substitute.length; i++) {
+          const typeId = this.chartData2_substitute[i]._id
+          that.$http({
+            path: '/admin/category/findById',
+            method: 'get',
+            params: {
+              id: typeId
+            }
+          }).then(result => {
+            // type值为null会报错
+            if (result.data.result.name) {
+              that.chartData2_substitute[i]._id = result.data.result.name
+            }
+          })
+        }
+        that.chartData2.rows = that.chartData2_substitute
+      })
+    },
+    getAgeCount() {
+      this.$http({
+        path: '/admin/statistic/ageCount',
+        method: 'get'
+      }).then(res => {
+        for (let i = 0; i < this.chartData3.rows.length; i++) {
+          // eslint-disable-next-line no-unused-vars
+          let age = ''
+          switch (res.data[i]._id) {
+            case '1':
+              age = '<18'
+              // 这样写的目的是为了顺序
+              this.chartData3.rows['1' - 1].data = age
+              this.chartData3.rows['1' - 1].number = res.data['1' - 1].count
+              break
+            case '2':
+              age = '18-35'
+              this.chartData3.rows['2' - 1].data = age
+              this.chartData3.rows['2' - 1].number = res.data['2' - 1].count
+              break
+            case '3':
+              age = '36-45'
+              this.chartData3.rows['3' - 1].data = age
+              this.chartData3.rows['3' - 1].number = res.data['3' - 1].count
+              break
+            case '4':
+              age = '45-60'
+              this.chartData3.rows['4' - 1].data = age
+              this.chartData3.rows['4' - 1].number = res.data['4' - 1].count
+              break
+            case '5':
+              age = '>60'
+              this.chartData3.rows['5' - 1].data = age
+              this.chartData3.rows['5' - 1].number = res.data['5' - 1].count
+              break
+          }
+        }
+      })
+    },
+    getYearCount() {
+      this.$http({
+        path: '/admin/statistic/yearCount',
+        method: 'get'
+      }).then(res => {
+        // eslint-disable-next-line no-unused-vars
+        var tempArray = res.data
+        // 冒泡排序
+        for (let i = 0; i < tempArray.length; i++) {
+          for (let j = i; j > 0; j--) {
+            if (tempArray[j]._id < tempArray[j - 1]._id) {
+              [tempArray[j - 1], tempArray[j]] = [tempArray[j], tempArray[j - 1]]
+            }
+          }
+        }
+        this.chartData1.rows = tempArray
+      })
     }
   }
 }

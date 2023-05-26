@@ -10,69 +10,132 @@
     >
       <el-table-column align="center" label="ID" width="95">
         <template slot-scope="scope">
-          {{ scope.$index }}
+          {{ scope.$index+1 }}
         </template>
       </el-table-column>
-      <el-table-column label="Title">
+      <el-table-column label="Title"  width="120">
         <template slot-scope="scope">
           {{ scope.row.title }}
         </template>
       </el-table-column>
-      <el-table-column label="Author" width="110" align="center">
+      <el-table-column label="Author" width="120" align="center">
         <template slot-scope="scope">
           <span>{{ scope.row.author }}</span>
         </template>
       </el-table-column>
-      <el-table-column label="Pageviews" width="110" align="center">
+      <el-table-column label="Stemfrom" width="120" align="center">
         <template slot-scope="scope">
-          {{ scope.row.pageviews }}
+          <span>{{ scope.row.stemfrom }}</span>
         </template>
       </el-table-column>
-      <el-table-column class-name="status-col" label="Status" width="110" align="center">
+      <el-table-column label="Cover" width="150" align="center">
         <template slot-scope="scope">
-          <el-tag :type="scope.row.status | statusFilter">{{ scope.row.status }}</el-tag>
+          <el-image :src="scope.row.cover"></el-image>
         </template>
       </el-table-column>
-      <el-table-column align="center" prop="created_at" label="Display_time" width="200">
+      <el-table-column label="Type" width="120" align="center">
         <template slot-scope="scope">
-          <i class="el-icon-time" />
-          <span>{{ scope.row.display_time }}</span>
+          <span>{{ scope.row.type }}</span>
+        </template>
+      </el-table-column>
+      <el-table-column label="Content" show-overflow-tooltip>
+        <template slot-scope="scope">
+          {{ scope.row.content }}
+        </template>
+      </el-table-column>
+      <el-table-column align="center" prop="created_at" label="Cooperation" width="200">
+        <template slot-scope="scope">
+          <el-button type="primary" @click="update(scope.row)">修改</el-button>
+          <el-button @click="del(scope.row)">删除</el-button>
         </template>
       </el-table-column>
     </el-table>
+
+    <!--    分页按钮-->
+    <el-pagination
+      background
+      layout="prev,pager,next"
+      :total="count"
+      :page-size="pageSize"
+      :current-page="page"
+      style="margin-top: 20px"
+      @current-change="changePage"
+    />
   </div>
 </template>
 
 <script>
-import { getList } from '@/api/table'
 
 export default {
-  filters: {
-    statusFilter(status) {
-      const statusMap = {
-        published: 'success',
-        draft: 'gray',
-        deleted: 'danger'
-      }
-      return statusMap[status]
-    }
-  },
   data() {
     return {
-      list: null,
-      listLoading: true
+      list: [],
+      listLoading: true,
+      page: 1,
+      pageSize: 0,
+      count: 0
     }
   },
   created() {
     this.fetchData()
   },
   methods: {
+    // 获取数据
     fetchData() {
-      this.listLoading = true
-      getList().then(response => {
-        this.list = response.data.items
-        this.listLoading = false
+      this.listLoading = false
+      this.$http({
+        path: '/admin/fraud/findAll',
+        method: 'get',
+        params: {
+          page: this.page, // 传参，目前是第几页
+          size: 7
+        }
+      }).then(res => {
+        console.log(res)
+        this.list = res.data.result
+        this.page = res.data.page
+        this.pageSize = res.data.pageSize
+        this.count = res.data.count
+        this.$message({
+          message: res.data.msg,
+          type: res.data.code === 200 ? 'success' : 'error'
+        })
       })
+    },
+    changePage(page) {
+      this.page = page
+      this.fetchData()
+    },
+    update(row) {
+      this.$router.push({
+        path: '/example/caseEdit',
+        query: {
+          _id: row._id
+        }
+      })
+    },
+    del(row) {
+      this.$confirm('确定要删除吗？', '提示', {
+        confirmButtonText: '删除',
+        cancelButtonText: '取消',
+        type: 'warning'
+      }).then(() => {
+        this.$http({
+          path: '/admin/fraud/del',
+          method: 'post',
+          params: {
+            _id: row._id
+          }
+        }).then(res => {
+          this.$message({
+            message: res.data.msg,
+            type: res.data.code === 200 ? 'success' : 'error'
+          })
+          if (res.data.code === 200) {
+            this.fetchData()
+          }
+        })
+      }).catch(() => {})
     }
   }
 }

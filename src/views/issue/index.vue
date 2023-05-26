@@ -1,13 +1,13 @@
 <template>
   <div class="app-container">
-    <el-button type="primary" style="margin-bottom: 30px" @click="addBtn">添加类型</el-button>
-    <el-dialog title="添加类型" :visible.sync="dialogFormVisible">
-      <el-form :model="form">
-        <el-form-item label="类型名称" :label-width="formLabelWidth" required>
-          <el-input v-model="form.name" type="text" name="name" />
+    <el-button type="primary" style="margin-bottom: 30px" @click="addBtn">添加问答</el-button>
+    <el-dialog title="添加问答" :visible.sync="dialogFormVisible">
+      <el-form :model="issue">
+        <el-form-item label="问题" :label-width="formLabelWidth" required>
+          <el-input v-model="issue.question" type="text" name="question" />
         </el-form-item>
-        <el-form-item label="类型编号" :label-width="formLabelWidth"  required>
-          <el-input v-model="form.id" type="text" name="id" />
+        <el-form-item label="回答" :label-width="formLabelWidth" required>
+          <el-input v-model="issue.answer" type="text" name="answer" />
         </el-form-item>
       </el-form>
       <div slot="footer" class="dialog-footer">
@@ -29,14 +29,14 @@
           {{ scope.$index + 1 }}
         </template>
       </el-table-column>
-      <el-table-column label="名称" align="center">
+      <el-table-column label="问题" align="center">
         <template slot-scope="scope">
-          {{ scope.row.name }}
+          {{ scope.row.question }}
         </template>
       </el-table-column>
-      <el-table-column label="编号" align="center">
+      <el-table-column label="回答" align="center">
         <template slot-scope="scope">
-          <span>{{ scope.row.id }}</span>
+          <span>{{ scope.row.answer }}</span>
         </template>
       </el-table-column>
       <el-table-column align="center" prop="created_at" label="操作">
@@ -53,15 +53,15 @@
 export default {
   data() {
     return {
-      form: {
-        name: '',
-        id: 0, // 初始值不能是Number
+      issue: {
+        question: '',
+        answer: '',
         _id: ''
       },
       list: [],
       listLoading: true,
       dialogFormVisible: false,
-      formLabelWidth: '80px',
+      formLabelWidth: '70px',
       isUpdate: false
     }
   },
@@ -72,7 +72,7 @@ export default {
     fetchData() {
       this.listLoading = false
       this.$http({
-        path: 'http://localhost:3001/admin/category/findAll',
+        path: 'http://localhost:3001/admin/issue/findAll',
         method: 'get'
       }).then(res => {
         this.list = res.data.result
@@ -89,20 +89,21 @@ export default {
       })
     },
     add() {
-      if (!this.form.name || !this.form.id){
+      if (!this.issue.question || !this.issue.answer) {
         this.$message({
           message: '必填字段不能为空',
           type: 'error'
         })
       } else {
         this.$http({
-          path: '/admin/category/add',
+          path: '/admin/issue/add',
           method: 'post',
           params: {
-            name: this.form.name,
-            id: this.form.id
+            question: this.issue.question,
+            answer: this.issue.answer
           }
         }).then(res => {
+          console.log(res)
           this.dialogFormVisible = false
           this.$message({
             message: res.data.msg,
@@ -115,38 +116,38 @@ export default {
     addBtn() {
       this.dialogFormVisible = true
       this.isUpdate = false
-      this.form = {}
+      this.issue = {}
     },
     updateBtn(row) {
       this.isUpdate = true
       this.dialogFormVisible = true
       this.$http({
-        path: '/admin/category/findOne',
+        path: '/admin/issue/findOne',
         method: 'get',
         params: {
           _id: row._id
         }
       }).then(res => {
-        const category = res.data.result
-        this.form._id = category._id
-        this.form.name = category.name
-        this.form.id = category.id
+        const issue = res.data.result
+        this.issue._id = issue._id
+        this.issue.question = issue.question
+        this.issue.answer = issue.answer
       })
     },
     update() {
-      if (!this.form.name || !this.form.id){
+      if (!this.issue.question || !this.issue.answer) {
         this.$message({
           message: '必填字段不能为空',
           type: 'error'
         })
       } else {
         this.$http({
-          path: '/admin/category/update',
+          path: '/admin/issue/update',
           method: 'post',
           params: {
-            _id: this.form._id,
-            name: this.form.name,
-            id: this.form.id
+            _id: this.issue._id,
+            question: this.issue.question,
+            answer: this.issue.answer
           }
         }).then(res => {
           console.log(res)
@@ -166,7 +167,7 @@ export default {
         type: 'warning'
       }).then(() => {
         this.$http({
-          path: '/admin/category/del',
+          path: '/admin/issue/del',
           method: 'post',
           params: {
             _id: row._id

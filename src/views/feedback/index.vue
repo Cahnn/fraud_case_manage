@@ -8,54 +8,38 @@
       fit
       highlight-current-row
     >
-      <el-table-column align="center" label="编号">
+      <el-table-column align="center" label="ID" width="95">
         <template slot-scope="scope">
-          {{ scope.$index + 1 }}
+          {{ scope.$index+1 }}
         </template>
       </el-table-column>
-      <el-table-column label="用户名" align="center">
+      <el-table-column label="图片" width="200" align="center">
         <template slot-scope="scope">
-          {{ scope.row.username }}
+          <el-image :src="scope.row.photo"></el-image>
         </template>
       </el-table-column>
-      <el-table-column label="头像" align="center">
+      <el-table-column label="内容" show-overflow-tooltip>
         <template slot-scope="scope">
-          <el-image :src="scope.row.avatar" />
+          {{ scope.row.content }}
         </template>
       </el-table-column>
-      <el-table-column label="邮箱" align="center">
+      <el-table-column label="类型"  width="200">
         <template slot-scope="scope">
-          {{ scope.row.email }}
+          {{ scope.row.type }}
         </template>
       </el-table-column>
-      <el-table-column label="手机号" align="center">
+      <el-table-column label="联系方式"  width="200">
         <template slot-scope="scope">
-          {{ scope.row.phone }}
+          {{ scope.row.contactWay }}
         </template>
       </el-table-column>
-      <el-table-column label="性别" align="center">
-        <template slot-scope="scope">
-          {{ scope.row.sex === 'male' ? '男' : '女' }}
-        </template>
-      </el-table-column>
-      <el-table-column label="密保答案" align="center">
-        <template slot-scope="scope">
-<!--          {{ scope.row.problem.question }}  <br>-->
-          {{ scope.row.problem.answer }}
-        </template>
-      </el-table-column>
-      <el-table-column label="Status" align="center">
-        <template slot-scope="scope">
-          <el-button v-if="scope.row.status === 1" type="success">正常</el-button>
-          <el-button v-else type="warning">禁用</el-button>
-        </template>
-      </el-table-column>
-      <el-table-column align="center" label="Operation">
+      <el-table-column align="center" prop="created_at" label="操作" width="200">
         <template slot-scope="scope">
           <el-button type="danger" @click="del(scope.row)">删除</el-button>
         </template>
       </el-table-column>
     </el-table>
+
   </div>
 </template>
 
@@ -64,8 +48,8 @@
 export default {
   data() {
     return {
-      listLoading: true,
-      list: []
+      list: [],
+      listLoading: true
     }
   },
   created() {
@@ -75,11 +59,20 @@ export default {
     fetchData() {
       this.listLoading = false
       this.$http({
-        path: '/admin/users/find',
+        path: '/admin/feedback/findAll',
         method: 'get'
       }).then(res => {
+        console.log('所有内容', res)
         this.list = res.data.result
+        this.$message({
+          message: res.data.msg,
+          type: res.status === 200 ? 'success' : 'error'
+        })
       })
+    },
+    changePage(page) {
+      this.page = page
+      this.fetchData()
     },
     del(row) {
       this.$confirm('确定要删除吗？', '提示', {
@@ -88,7 +81,7 @@ export default {
         type: 'warning'
       }).then(() => {
         this.$http({
-          path: '/admin/users/del',
+          path: '/admin/feedback/del',
           method: 'post',
           params: {
             _id: row._id
@@ -108,6 +101,3 @@ export default {
 }
 </script>
 
-<style scoped>
-
-</style>
